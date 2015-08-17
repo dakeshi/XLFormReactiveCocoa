@@ -1,5 +1,12 @@
 # XLFormReactiveCocoa
-This is XLFormExample project inspired by XLForm. 
+This is XLFormReactiveCocoa project inspired by XLForm.
+I use ReactiveCocoa, Masonry libraries in this project. Because it is more intuitive.
 
-- Use ReactiveCocoa instead of textfield delegate
-- Custom Cell implementation. 
+- Custom Cell implementation
+Currency, Image, FloatTextField etc.
+
+# Future
+picker
+
+# Licence
+MIT Licence
