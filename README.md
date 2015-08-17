@@ -5,7 +5,7 @@ I use ReactiveCocoa, Masonry libraries in this project. Because it is more intui
 - Custom Cell implementation
 Currency, Image, FloatTextField etc.
 
-# Future
+# TODO
 picker
 
 # Licence
