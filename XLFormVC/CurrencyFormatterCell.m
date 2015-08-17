@@ -28,6 +28,7 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
 @end
 
 @implementation CurrencyFormatterCell
+@synthesize titleLabel = _titleLabel, currencyNumberFormatter = _currencyNumberFormatter;
 
 
 +(void)load
@@ -113,7 +114,8 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
     [self.currencyNumberFormatter setLocale:customLocale];
 
     [self.currencyNumberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
-    [self.currencyNumberFormatter setMinimumFractionDigits:2];
+//    [self.currencyNumberFormatter setMinimumFractionDigits:0];
+    [self.currencyNumberFormatter setMaximumFractionDigits:0];
 
     // 2. convert Textfield input to currency format string
     RAC(self.currencyTextField, text) = [[self.currencyTextField.rac_textSignal ignore:nil]
