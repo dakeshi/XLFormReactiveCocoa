@@ -29,13 +29,6 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
 
 @implementation CurrencyFormatterCell
 
--(NSNumberFormatter *)currencyNumberFormatter{
-    
-    if(!_currencyNumberFormatter) _currencyNumberFormatter = [[NSNumberFormatter alloc] init];
-    
-    return _currencyNumberFormatter;
-}
-
 
 +(void)load
 {
@@ -43,7 +36,7 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
 }
 
 
-#pragma mark - property setter
+#pragma mark - property setter/getter
 
 -(UITextField *)currencyTextField
 {
@@ -71,6 +64,15 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
     return _titleLabel;
 }
 
+-(NSNumberFormatter *)currencyNumberFormatter{
+    
+    if(!_currencyNumberFormatter) _currencyNumberFormatter = [[NSNumberFormatter alloc] init];
+    
+    return _currencyNumberFormatter;
+}
+
+
+#pragma mark - configure customCell in XLForm
 -(void)configure{
     
     [super configure];
@@ -140,6 +142,7 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
 
 }
 
+#pragma mark - update
 -(void)update
 {
     [super update];
