@@ -29,6 +29,9 @@ PODS:
   - ReactiveCocoa/no-arc (2.5)
   - ReactiveCocoa/UI (2.5):
     - ReactiveCocoa/Core
+  - TSCurrencyTextField (0.1.0):
+    - TSCurrencyTextField/Core (= 0.1.0)
+  - TSCurrencyTextField/Core (0.1.0)
   - XLForm (3.0.0)
 
 DEPENDENCIES:
@@ -36,6 +39,7 @@ DEPENDENCIES:
   - JVFloatLabeledTextField (= 1.0.2)
   - Masonry (~> 0.6.1)
   - ReactiveCocoa
+  - TSCurrencyTextField (~> 0.1.0)
   - XLForm
 
 SPEC CHECKSUMS:
@@ -43,6 +47,7 @@ SPEC CHECKSUMS:
   JVFloatLabeledTextField: 58a3a32cfb800e5b224f676987e7c13abf50a14d
   Masonry: 4972309f2f134de9dd312f4dc4a21359b50e6caa
   ReactiveCocoa: e2db045570aa97c695e7aa97c2bcab222ae51f4a
+  TSCurrencyTextField: 03f9d4d263d617d1f0e034e4ace12febcfa6fe48
   XLForm: 10fc7eb9e2d5df21a515fa3a794f4e26319abd0e
 
-COCOAPODS: 0.37.2
+COCOAPODS: 0.38.2

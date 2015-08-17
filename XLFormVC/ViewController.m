@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "FloatLabeledTextFieldCell.h"
 #import "XLFormImageSelectorCell.h"
+#import "CurrencyFormatterCell.h"
 #import <XLForm.h>
 
 
@@ -16,8 +17,9 @@
 
 @end
 
-NSString * const kCustomRowFloatLabeledTextFieldTag = @"CustomRowFloatLabeledTextFieldTag";
-NSString *const kButton = @"button";
+NSString *const kCustomRowFloatLabeledTextFieldTag = @"customRowFloatLabeledTextFieldTag";
+NSString *const kCurrency = @"customCurrencyTag";
+NSString *const kButton = @"resultButton";
 NSString *const kCustomImgCellTag = @"customImgCellTag";
 
 @implementation ViewController
@@ -34,18 +36,24 @@ NSString *const kCustomImgCellTag = @"customImgCellTag";
     section = [XLFormSectionDescriptor formSectionWithTitle:@"* : Required Info"];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:kCustomRowFloatLabeledTextFieldTag rowType:XLFormRowDescriptorTypeFloatLabeledTextField title:@"ProductName"];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:kCustomRowFloatLabeledTextFieldTag rowType:XLFormRowDescriptorTypeFloatLabeledTextField title:NSLocalizedString(@"ProductName", nil)];
     [section addFormRow:row];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:kButton rowType:XLFormRowDescriptorTypeButton title:@"Button"];
+    // 판매가격. Custom CurrencyFormmaterCell
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:kCurrency rowType:XLFormRowDescriptorTypeCurrencyFormatterCell title:NSLocalizedString(@"Price", @"with currency")];
+    row.value = @"0";
+    [section addFormRow:row];
+    
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:kButton rowType:XLFormRowDescriptorTypeButton title:@"Results"];
     [row.cellConfig setObject:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0] forKey:@"textLabel.textColor"];
     row.action.formSelector = @selector(didTouchButton:);
     [section addFormRow:row];
     
     
-    XLFormRowDescriptor *customRowDescriptor = [XLFormRowDescriptor formRowDescriptorWithTag:kCustomImgCellTag rowType:kFormImageSelectorCellDefaultImage];
-    customRowDescriptor.cellClass = [XLFormImageSelectorCell class];
-    [section addFormRow:customRowDescriptor];
+//    XLFormRowDescriptor *customRowDescriptor = [XLFormRowDescriptor formRowDescriptorWithTag:kCustomImgCellTag rowType:kFormImageSelectorCellDefaultImage];
+//    customRowDescriptor.cellClass = [XLFormImageSelectorCell class];
+//    [section addFormRow:customRowDescriptor];
     
     self.form = form;
 
@@ -56,8 +64,9 @@ NSString *const kCustomImgCellTag = @"customImgCellTag";
 {
     NSString *result = [self.form formRowWithTag:kCustomRowFloatLabeledTextFieldTag].value;
 
+    NSString *price = [self.form formRowWithTag:kCurrency].value;
 #if DEBUG
-    NSLog(@"result text = %@", result);
+    NSLog(@"textField value is : %@\nprice = %@", result, price);
 #endif
     [self deselectFormRow:sender];
 }
