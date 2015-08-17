@@ -8,13 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import <XLFormBaseCell.h>
-#import <TSCurrencyTextField.h>
 
 extern NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell;
 
 @interface CurrencyFormatterCell : XLFormBaseCell
 
 
-@property (nonatomic) TSCurrencyTextField * currencyTextField;
+@property (nonatomic) UITextField * currencyTextField;
 
 @end

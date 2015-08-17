@@ -22,11 +22,20 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
 @interface CurrencyFormatterCell()
 
 @property (nonatomic) UILabel * titleLabel;
+@property (nonatomic) NSNumberFormatter *currencyNumberFormatter;
 
 
 @end
 
 @implementation CurrencyFormatterCell
+
+-(NSNumberFormatter *)currencyNumberFormatter{
+    
+    if(!_currencyNumberFormatter) _currencyNumberFormatter = [[NSNumberFormatter alloc] init];
+    
+    return _currencyNumberFormatter;
+}
+
 
 +(void)load
 {
@@ -36,13 +45,12 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
 
 #pragma mark - property setter
 
--(TSCurrencyTextField *)currencyTextField
+-(UITextField *)currencyTextField
 {
     if (_currencyTextField) return _currencyTextField;
     
-    _currencyTextField = [TSCurrencyTextField autolayoutView];
+    _currencyTextField = [UITextField autolayoutView];
     _currencyTextField.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-
     
     _currencyTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
     _currencyTextField.textAlignment = NSTextAlignmentRight;
@@ -57,6 +65,8 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
     
     _titleLabel = [UILabel autolayoutView];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
+    _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _titleLabel.textColor = [UIColor lightGrayColor];
     
     return _titleLabel;
 }
@@ -71,6 +81,8 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
     [self.contentView addSubview:self.currencyTextField];
 
 
+    // configure autoLayout
+    
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.contentView.top).offset(8);
         make.bottom.equalTo(self.contentView.bottom).offset(-8);
@@ -78,8 +90,6 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
         make.right.equalTo(self.currencyTextField.left).offset(-8);
         make.width.equalTo(@80);
     }];
-    
-
     
     [self.currencyTextField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(self.contentView.right).offset(-8);
@@ -90,39 +100,43 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
 
     }];
     
-    // rowDescriptor.value에 통화표기 symbol 문자열을 제외한 문자열만 전달하기 위해
-    // formatter를 설정한다.
-    NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
     
-    // 1. locale을 ko_KR로 설정
+    // set specific locale
 //    NSLocale *customLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"ko_KR"];
-    
-    NSLocale *customLocale = [NSLocale currentLocale];
-    [nf setLocale:customLocale];
-    
-    
-    // 2. 가격표시는 통화 포맷이 사용됨. locale을 한국으로 설정하였으므로,
-    // 숫자 앞에 원 표시와 천 단위 숫자 구분점이 나타난다.
-    [nf setNumberStyle:NSNumberFormatterCurrencyStyle];
-    
-    // 3. 소수점 이하는 표기하지 않는다.
-    [nf setMaximumFractionDigits:0];
 
+    // 1. configure currencyNumberFormatter
     
-    // Binding rowDescriptor.value with formattedCurrency value
+    // set locale with currentLocale value
+    NSLocale *customLocale = [NSLocale currentLocale];
+    [self.currencyNumberFormatter setLocale:customLocale];
+
+    [self.currencyNumberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+    [self.currencyNumberFormatter setMinimumFractionDigits:2];
+
+    // 2. convert Textfield input to currency format string
+    RAC(self.currencyTextField, text) = [[self.currencyTextField.rac_textSignal ignore:nil]
+                                         map:^id(NSString *text) {
+                                             
+                                             NSString *currencyString = [self.currencyNumberFormatter stringFromNumber: [self stringToCurrency: text]];
+                                             
+                                             return currencyString;
+                                             
+                                         }];
+    
+    
+    // 3. Binding rowDescriptor.value with formattedCurrency value
     RAC(self, rowDescriptor.value) =
     
-    [self.currencyTextField.rac_textSignal map:^id(NSString *text) {
-         
-#if DEBUG
-         NSLog(@"text = %@", text);
-#endif
+    [[self.currencyTextField.rac_textSignal ignore:nil] map:^id(NSString *text) {
 
-         // map을 이용해 text에서 sysmbol 문자를 제외한 문자열(숫자값)만 추출한다.
-         NSNumber *formattedCurrency = [nf numberFromString:text];
+         // remove currency symbol
+         NSNumber *formattedCurrency = [self.currencyNumberFormatter numberFromString:text];
          
          return [formattedCurrency stringValue];
     }];
+    
+    
+    [self.currencyTextField setKeyboardType:UIKeyboardTypeDecimalPad];
 
 }
 
@@ -130,6 +144,7 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
 {
     [super update];
     
+    // set titleLabel with rowDescriptor.title.
     self.titleLabel.text = self.rowDescriptor.title;
     
     self.currencyTextField.text = self.rowDescriptor.value ? [self.rowDescriptor.value displayText] : self.rowDescriptor.noValueDisplayText;
@@ -138,9 +153,28 @@ NSString * const XLFormRowDescriptorTypeCurrencyFormatterCell = @"XLFormRowDescr
     
     [self.currencyTextField setAlpha:((self.rowDescriptor.isDisabled) ? .6 : 1)];
     
-    [self.currencyTextField setKeyboardType:UIKeyboardTypeDecimalPad];
     
+}
+
+/**
+ *  @brief convert textField input to NSNumber with currency format
+ *
+ *  @param string textFiled input
+ *
+ *  @return NSNumber NSNumber with currencyNumberFormat
+ */
+
+- (NSNumber*) stringToCurrency : (NSString*) string
+{
+
+    NSString* digitString = [[string componentsSeparatedByCharactersInSet: [[NSCharacterSet decimalDigitCharacterSet] invertedSet]] componentsJoinedByString: @""];
     
+    NSInteger fd = self.currencyNumberFormatter.minimumFractionDigits;
+    
+
+    NSNumber* n = [NSNumber numberWithDouble: [digitString doubleValue] / pow(10.0, fd) ];
+    
+    return n;
 }
 
 -(BOOL)formDescriptorCellCanBecomeFirstResponder

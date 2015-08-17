@@ -66,7 +66,7 @@ NSString *const kCustomImgCellTag = @"customImgCellTag";
 
     NSString *price = [self.form formRowWithTag:kCurrency].value;
 #if DEBUG
-    NSLog(@"textField value is : %@\nprice = %@", result, price);
+    NSLog(@"ProductName is : %@\nAnd price is = %@", result, price);
 #endif
     [self deselectFormRow:sender];
 }

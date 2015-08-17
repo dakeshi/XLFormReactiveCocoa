@@ -6,7 +6,6 @@ pod 'ReactiveCocoa'
 pod 'XLForm'
 pod 'JVFloatLabeledTextField', '1.0.2'
 pod 'Masonry', '~> 0.6.1'
-pod 'TSCurrencyTextField', '~> 0.1.0'
 end
 
 target 'XLFormVCTests' do
